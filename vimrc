@@ -197,6 +197,9 @@ set sidescroll=1
 filetype plugin on
 filetype indent on
 
+"turn on line numbering
+set number 
+
 "turn on syntax highlighting
 syntax on
 
