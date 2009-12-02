@@ -218,7 +218,7 @@ if !has("gui")
     let g:CSApprox_loaded = 1
 else
     if has("gui_gnome")
-        set term=gnome-256color
+"        set term=gnome-256color
         colorscheme desert
     else
         set t_Co=256
@@ -311,3 +311,4 @@ function! s:HighlightLongLines(width)
         echomsg "Usage: HighlightLongLines [natural number]"
     endif
 endfunction
+
