@@ -184,6 +184,7 @@ set wildignore=*.o,*.obj,*~ "stuff to ignore when tab completing
 
 "display tabs and trailing spaces
 set list
+"set listchars=tab:▷⋅,trail:⋅,nbsp:⋅
 set listchars=tab:\ \ ,extends:>,precedes:<
 
 set formatoptions-=o "dont continue comments when pushing o/O
@@ -213,6 +214,8 @@ set t_Co=256
 "hide buffers when not displayed
 set hidden
 
+set number
+
 "dont load csapprox if we no gui support - silences an annoying warning
 if !has("gui")
     let g:CSApprox_loaded = 1
@@ -221,14 +224,14 @@ else
 "        set term=gnome-256color
         colorscheme desert
     else
-        set t_Co=256
-        colorscheme vibrantink
+        colorscheme vividchalk
         set guitablabel=%M%t
         set lines=40
         set columns=115
+        set t_Co=256
     endif
     if has("gui_mac") || has("gui_macvim")
-        set guifont=Menlo:h15
+        set guifont=Monaco:h16
     endif
     if has("gui_win32") || has("gui_win32s")
         set guifont=Consolas:h12
@@ -237,16 +240,21 @@ else
 endif
 
 nmap <silent> <Leader>p :NERDTreeToggle<CR>
+nnoremap <silent> <Leader>p :ruby finder.rescan!<CR> :FuzzyFinderRemoveCache<CR> :NERDTreeToggle<CR>
+inoremap <silent> <Leader>p :ruby finder.rescan!<CR> :FuzzyFinderRemoveCache<CR> :NERDTreeToggle<CR>
 
 "make <c-l> clear the highlight as well as redraw
 nnoremap <C-L> :nohls<CR><C-L>
 inoremap <C-L> <C-O>:nohls<CR>
 
 "map to bufexplorer
-nnoremap <C-B> :BufExplorer<cr>
-
+nnoremap <C-B> :FuzzyFinderBuffer<cr>
+nnoremap <C-f> :bdelete<CR>
+nnoremap <C-PageDown> :bp<CR>
 "map to fuzzy finder text mate stylez
-nnoremap <c-f> :FuzzyFinderTextMate<CR>
+nnoremap <c-t> :FuzzyFinderTextMate<CR>
+nnoremap <c-r> :ruby finder.rescan!<CR> :FuzzyFinderRemoveCache<CR> :exe ":echo 'rescan complete'"<CR>
+inoremap <c-r> <ESC> :ruby finder.rescan!<CR> :FuzzyFinderRemoveCache<CR> :exe ":echo 'rescan complete'"<CR>
 
 "map Q to something useful
 noremap Q gq
