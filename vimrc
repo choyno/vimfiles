@@ -208,36 +208,34 @@ syntax on
 set mouse=a
 set ttymouse=xterm2
 
-"tell the term has 256 colors
-set t_Co=256
-
 "hide buffers when not displayed
 set hidden
 
-set number
+if has("gui_running")
+		"tell the term has 256 colors
+		set t_Co=256
 
-"dont load csapprox if we no gui support - silences an annoying warning
-if !has("gui")
-    let g:CSApprox_loaded = 1
-else
     if has("gui_gnome")
 "        set term=gnome-256color
         colorscheme desert
     else
-        colorscheme vividchalk
+        colorscheme vibrantink
         set guitablabel=%M%t
         set lines=40
         set columns=115
-        set t_Co=256
     endif
     if has("gui_mac") || has("gui_macvim")
-        set guifont=Monaco:h16
+        set guifont=Menlo:h15
     endif
     if has("gui_win32") || has("gui_win32s")
         set guifont=Consolas:h12
 				set enc=utf-8
     endif
+else
+		"dont load csapprox if we no gui support - silences an annoying warning
+    let g:CSApprox_loaded = 1
 endif
+
 
 nmap <silent> <Leader>p :NERDTreeToggle<CR>
 nnoremap <silent> <Leader>p :ruby finder.rescan!<CR> :FuzzyFinderRemoveCache<CR> :NERDTreeToggle<CR>
@@ -251,6 +249,7 @@ inoremap <C-L> <C-O>:nohls<CR>
 nnoremap <C-B> :FuzzyFinderBuffer<cr>
 nnoremap <C-f> :bdelete<CR>
 nnoremap <C-PageDown> :bp<CR>
+
 "map to fuzzy finder text mate stylez
 nnoremap <c-t> :FuzzyFinderTextMate<CR>
 nnoremap <c-r> :ruby finder.rescan!<CR> :FuzzyFinderRemoveCache<CR> :exe ":echo 'rescan complete'"<CR>
