@@ -167,7 +167,9 @@ function! s:Median(nums)
     endif
 endfunction
 
-"indent settings
+"indent and tab settings
+"http://version7x.wordpress.com/2010/03/07/was-that-a-tab-or-a-series-of-spaces/
+set tabstop=2
 set shiftwidth=2
 set softtabstop=2
 set expandtab
@@ -185,7 +187,8 @@ set wildignore=*.o,*.obj,*~ "stuff to ignore when tab completing
 "display tabs and trailing spaces
 set list
 "set listchars=tab:▷⋅,trail:⋅,nbsp:⋅
-set listchars=tab:\ \ ,extends:>,precedes:<
+"set listchars=tab:\ \ ,extends:>,precedes:<
+set listchars=tab:>-,trail:.
 
 set formatoptions-=o "dont continue comments when pushing o/O
 
