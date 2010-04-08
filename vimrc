@@ -231,7 +231,7 @@ if has("gui_running")
         set columns=115
     endif
     if has("gui_mac") || has("gui_macvim")
-        set guifont=Menlo:h15
+        set guifont=Menlo:h13
     endif
     if has("gui_win32") || has("gui_win32s")
         set guifont=Consolas:h12
