@@ -1,6 +1,7 @@
 " Vim indent file
 " Language:		Ruby
 " Maintainer:		Nikolai Weibull <now at bitwi.se>
+" Last Change:		2009 Dec 17
 " URL:			http://vim-ruby.rubyforge.org
 " Anon CVS:		See above site
 " Release Coordinator:	Doug Kearns <dougkearns@gmail.com>
@@ -53,7 +54,7 @@ let s:ruby_indent_keywords = '^\s*\zs\<\%(module\|class\|def\|if\|for' .
       \ '\|while\|until\|else\|elsif\|case\|when\|unless\|begin\|ensure' .
       \ '\|rescue\)\>' .
       \ '\|\%([*+/,=-]\|<<\|>>\|:\s\)\s*\zs' .
-      \    '\<\%(if\|for\|while\|until\|case\|unless\|begin\)\>'
+      \    '\<\%(if\|for\|while\|until\|case\|unless\|begin\):\@!\>'
 
 " Regex used for words that, at the start of a line, remove a level of indent.
 let s:ruby_deindent_keywords =
