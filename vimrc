@@ -244,8 +244,6 @@ endif
 
 
 nmap <silent> <Leader>p :NERDTreeToggle<CR>
-nnoremap <silent> <Leader>p :ruby finder.rescan!<CR> :FuzzyFinderRemoveCache<CR> :NERDTreeToggle<CR>
-inoremap <silent> <Leader>p :ruby finder.rescan!<CR> :FuzzyFinderRemoveCache<CR> :NERDTreeToggle<CR>
 
 "make <c-l> clear the highlight as well as redraw
 nnoremap <C-L> :nohls<CR><C-L>
