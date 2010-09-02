@@ -722,6 +722,8 @@ function! s:readable_calculate_file_type() dict abort
     let r = "stylesheet-".e
   elseif e == "js"
     let r = "javascript"
+  elseif e == "coffee"
+    let r = "javascript-coffee"
   elseif e == "html"
     let r = e
   elseif f =~ '\<config/routes\>.*\.rb$'
@@ -774,7 +776,8 @@ function! s:app_has(feature) dict
         \'spec': 'spec/',
         \'cucumber': 'features/',
         \'sass': 'public/stylesheets/sass/',
-        \'lesscss': 'app/stylesheets/'}
+        \'lesscss': 'app/stylesheets/',
+        \'coffee': 'app/scripts/'}
   if self.cache.needs('features')
     call self.cache.set('features',{})
   endif
@@ -924,7 +927,7 @@ function! s:BufCommands()
   let ext = expand("%:e")
   if ext =~ s:viewspattern()
     " TODO: complete controller names with trailing slashes here
-    command! -buffer -bar -nargs=? -range -complete=customlist,s:controllerList Rextract :<line1>,<line2>call s:Extract(<bang>0,<f-args>)
+    command! -buffer -bar -bang -nargs=? -range -complete=customlist,s:controllerList Rextract :<line1>,<line2>call s:Extract(<bang>0,<f-args>)
   endif
   if RailsFilePath() =~ '\<db/migrate/.*\.rb$'
     command! -buffer -bar                 Rinvert  :call s:Invert(<bang>0)
@@ -1367,6 +1370,8 @@ function! s:readable_preview_urls(lnum) dict abort
     let urls = urls + [s:sub(self.name(),'^public','')]
   elseif self.name() =~ '^app/stylesheets/'
     let urls = urls + [s:sub(s:sub(self.name(),'^app/stylesheets/','/stylesheets/'),'\.less$','.css')]
+  elseif self.name() =~ '^app/scripts/'
+    let urls = urls + [s:sub(s:sub(self.name(),'^app/scripts/','/javascripts/'),'\.coffee$','.js')]
   elseif self.controller_name() != '' && self.controller_name() != 'application'
     if self.type_name('controller') && self.last_method(a:lnum) != ''
       let urls += ['/'.self.controller_name().'/'.self.last_method(a:lnum).'/']
@@ -2646,7 +2651,14 @@ function! s:stylesheetEdit(cmd,...)
 endfunction
 
 function! s:javascriptEdit(cmd,...)
-  return s:EditSimpleRb(a:cmd,"javascript",a:0? a:1 : "application","public/javascripts/",".js",1)
+  let name = a:0 ? a:1 : s:controller(1)
+  if rails#app().has('coffee') && rails#app().has_file('app/scripts/'.name.'.coffee')
+    return s:EditSimpleRb(a:cmd,'javascript',name,'app/scripts/','.coffee',1)
+  elseif rails#app().has('coffee') && rails#app().has_file('app/scripts/'.name.'.js')
+    return s:EditSimpleRb(a:cmd,'javascript',name,'app/scripts/','.js',1)
+  else
+    return s:EditSimpleRb(a:cmd,'javascript',name,'public/javascripts/','.js',1)
+  endif
 endfunction
 
 function! s:unittestEdit(cmd,...)
@@ -3162,15 +3174,8 @@ function! s:Extract(bang,...) range abort
   else
     let out = (rails_root)."/app/views/".dir."/_".fname
   endif
-  if filereadable(out)
-    let partial_warn = 1
-  endif
-  if bufnr(out) > 0
-    if bufloaded(out)
-      return s:error("Partial already open in buffer ".bufnr(out))
-    else
-      exe "bwipeout ".bufnr(out)
-    endif
+  if filereadable(out) && !a:bang
+    return s:error('E13: File exists (add ! to override)')
   endif
   " No tabs, they'll just complicate things
   if ext =~? '^\%(rhtml\|erb\|dryml\)$'
@@ -3231,13 +3236,9 @@ function! s:Extract(bang,...) range abort
     norm ^5w
   endif
   let ft = &ft
-  if &hidden
-    enew
-  else
-    new
-  endif
   let shortout = fnamemodify(out,':.')
-  silent file `=shortout`
+  silent split `=shortout`
+  silent %delete
   let &ft = ft
   let @@ = partial
   silent put
@@ -3248,10 +3249,6 @@ function! s:Extract(bang,...) range abort
   endif
   silent! exe '%substitute?\%(\w\|[@:"'."'".'-]\)\@<!'.var.'\>?'.name.'?g'
   1
-  call RailsBufInit(rails_root)
-  if exists("l:partial_warn")
-    call s:warn("Warning: partial exists!")
-  endif
 endfunction
 
 " }}}1
@@ -3652,7 +3649,7 @@ function! s:BufSyntax()
       set isk+=$
       exe "syn keyword javascriptRailsFunction contained ".s:javascript_functions
       syn cluster htmlJavaScript add=javascriptRailsFunction
-    elseif &syntax == "javascript"
+    elseif &syntax == "javascript" || &syntax == "coffee"
       " The syntax file included with Vim incorrectly sets syn case ignore.
       syn case match
       set isk+=$
@@ -4717,7 +4714,7 @@ augroup railsPluginAuto
   autocmd BufWritePost */tasks/**.rake            call rails#cache_clear("rake_tasks")
   autocmd BufWritePost */generators/**            call rails#cache_clear("generators")
   autocmd FileType * if exists("b:rails_root") | call s:BufSettings() | endif
-  autocmd Syntax ruby,eruby,yaml,haml,javascript,railslog if exists("b:rails_root") | call s:BufSyntax() | endif
+  autocmd Syntax ruby,eruby,yaml,haml,javascript,coffee,railslog if exists("b:rails_root") | call s:BufSyntax() | endif
   autocmd QuickFixCmdPre  make* call s:push_chdir()
   autocmd QuickFixCmdPost make* call s:pop_command()
 augroup END
